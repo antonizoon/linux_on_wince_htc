@@ -46,7 +46,7 @@
 #include "board-htcleo.h"
 
 static uint32_t microp_als_kadc;
-static int als_power_control;
+static int als_power_control=0;
 static DEFINE_MUTEX(capella_cm3602_lock);
 
 
@@ -413,19 +413,20 @@ int capella_cm3602_power(int pwr_device, uint8_t enable)
 			return ret;
 		}
 	}
-
 	old_status = als_power_control;
 	if (enable)
 		als_power_control |= pwr_device;
 	else
 		als_power_control &= ~pwr_device;
 
-	on = als_power_control ? 1 : 0;
-	if (old_status == 0 && on)
-		ret = __capella_cm3602_power(1);
-	else if (!on)
-		ret = __capella_cm3602_power(0);
+	on = als_power_control & pwr_device ? 1 : 0;
 
+	if(pwr_device==PS_PWR_ON) { // Switch the Proximity IRQ
+		if (!(old_status & pwr_device) && on)
+			ret = __capella_cm3602_power(1);
+		else if (!on)
+			ret = __capella_cm3602_power(0);
+	}
 	mutex_unlock(&capella_cm3602_lock);
 	return ret;
 }
