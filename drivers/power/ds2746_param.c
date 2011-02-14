@@ -716,7 +716,7 @@ static BOOL __battery_param_udpate(struct battery_type *battery)
 		FL_25[battery->id_index] = 2300;
 		battery->charge_full_real_mAh = FL_25[battery->id_index];
 		battery->charge_full_design_mAh = battery->charge_full_real_mAh;
-		temp_01c = battery->temp_adc*10;
+		temp_01c = 650 - battery->temp_adc*10;
 		}
 	else
 		FL_25[battery->id_index] = 1230;
