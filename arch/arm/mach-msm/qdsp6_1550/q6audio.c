@@ -2005,6 +2005,28 @@ int q6audio_set_rx_volume(int level)
     return 0;
 }
 
+int q6audio_set_tx_dev_volume(int level)
+{
+    int vol;
+
+    AUDIO_INFO("%s\n", __func__);
+
+    mutex_lock(&audio_path_lock);
+
+    vol = q6_device_volume(audio_tx_device_id, level);
+    AUDIO_INFO("$$ DEV=%08X: vol is %d\n", audio_tx_device_id, vol);
+    audio_tx_volume(ac_control, audio_tx_device_id, vol);
+
+    mutex_unlock(&audio_path_lock);
+    return 0;
+}
+
+
+int q6audio_set_tx_volume(int level)
+{
+    return q6audio_set_tx_dev_volume(level);
+}
+
 static int q6audio_init_rx_volumes()
 {
     int vol;
@@ -2014,14 +2036,14 @@ static int q6audio_init_rx_volumes()
 
     mutex_lock(&audio_path_lock);
 
-    printk("$$$ q6audio_init_rx_volumes\n");
+    AUDIO_INFO("$$$ q6audio_init_rx_volumes\n");
     while (1)
     {
         if (di->id == 0) break;
 
         vol = q6_device_volume(di->id, 100);
         audio_rx_volume(ac_control, di->id, vol);
-        printk("$$ DEV=%08X: vol is %d\n", di->id, vol);
+        AUDIO_INFO("$$ DEV=%08X: vol is %d\n", di->id, vol);
 
         di++;
     }
@@ -2649,6 +2671,5 @@ static struct audio_client * audio_test(void)
 
     return ac2;
 }
-
 
 // END OF FILE
