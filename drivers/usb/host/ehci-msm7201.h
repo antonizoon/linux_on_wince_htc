@@ -24,6 +24,9 @@ struct msm7201_usb_priv
 {
 	struct clk *clk;
 	struct clk *pclk;
+	struct clk *otgclk;
+        struct clk *coreclk;
+	struct clk *ebi1clk;
 
 	int *phy_init_seq;
 	void (*phy_reset)(void);

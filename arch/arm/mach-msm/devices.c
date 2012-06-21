@@ -432,6 +432,29 @@ struct platform_device msm_device_hsusb = {
 	},
 };
 
+static struct resource resources_hsusb_host[] = {
+        {
+                .start  = MSM_HSUSB_PHYS,
+                .end    = MSM_HSUSB_PHYS + MSM_HSUSB_SIZE,
+                .flags  = IORESOURCE_MEM,
+        },
+        {
+                .start  = INT_USB_HS,
+                .end    = INT_USB_HS,
+                .flags  = IORESOURCE_IRQ,
+        },
+};
+
+struct platform_device msm_device_hsusb_host = {
+        .name           = "msm_hsusb_host",
+        .id             = 0,
+        .num_resources  = ARRAY_SIZE(resources_hsusb_host),
+        .resource       = resources_hsusb_host,
+        .dev            = {
+                .coherent_dma_mask      = 0xffffffff,
+        },
+};
+
 void __init msm_add_usb_devices(void (*phy_reset) (void), void (*phy_shutdown) (void))
 {
 	/* setup */
@@ -1378,8 +1401,9 @@ struct clk msm_clocks[] = {
 	CLK_ALL("uart_clk", UART3_CLK, &msm_device_uart3.dev, OFF),
 	CLK_ALL("uartdm_clk", UART1DM_CLK, &msm_device_uart_dm1.dev, OFF),
 	CLK_ALL("uartdm_clk", UART2DM_CLK, &msm_device_uart_dm2.dev, OFF),
-	CLK_ALL("usb_hs_clk", USB_HS_CLK, &msm_device_hsusb.dev, OFF),
-	CLK_ALL("usb_hs_pclk", USB_HS_PCLK, &msm_device_hsusb.dev, OFF),
+	CLK_ALL("usb_hs_clk", USB_HS_CLK, &msm_device_hsusb_host.dev, OFF),
+	CLK_ALL("usb_hs_pclk", USB_HS_PCLK, &msm_device_hsusb_host.dev, OFF),
+
 	CLK_ALL("usb_otg_clk", USB_OTG_CLK, NULL, 0),
 	CLK_ALL("vdc_clk", VDC_CLK, NULL, OFF | MINMAX),
 	CLK_ALL("vfe_clk", VFE_CLK, NULL, OFF),

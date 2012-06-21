@@ -66,7 +66,8 @@
 static const char	hcd_name [] = "ehci_hcd";
 
 
-#undef VERBOSE_DEBUG
+//#undef VERBOSE_DEBUG
+#define VERBOSE_DEBUG
 #undef EHCI_URB_TRACE
 
 #ifdef DEBUG
@@ -1134,6 +1135,11 @@ MODULE_LICENSE ("GPL");
 #ifdef CONFIG_USB_EHCI_MSM7201
 #include "ehci-msm7201.c"
 #define PLATFORM_DRIVER         ehci_msm7201_driver
+#endif
+
+#ifdef CONFIG_USB_EHCI_MSM72K
+#include "ehci-msm72k.c"
+#define PLATFORM_DRIVER         msm72k_ehci_driver
 #endif
 
 #ifdef CONFIG_USB_W90X900_EHCI

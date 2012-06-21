@@ -291,7 +291,27 @@ static uint32_t usb_phy_3v3_table[] =
     PCOM_GPIO_CFG(HTCLEO_GPIO_USBPHY_3V3_ENABLE, 0, GPIO_OUTPUT, GPIO_NO_PULL, GPIO_4MA)
 };
 
-static int htcleo_phy_init_seq[] ={0x0C, 0x31, 0x30, 0x32, 0x1D, 0x0D, 0x1D, 0x10, -1};
+static int htcleo_phy_init_seq[] = { 0x40, 0x31, 0x1D, 0x0D, 0x1D, 0x10, -1 };
+
+
+struct msm_hsusb_platform_data msm_hsusb_host_pdata = {
+        .phy_init_seq           = htcleo_phy_init_seq,
+        .phy_reset              = msm_hsusb_8x50_phy_reset,
+        .accessory_detect = 0, /* detect by ID pin gpio */
+
+#ifdef CONFIG_USB_FUNCTION
+        .vendor_id = 0x0bb4,
+        .product_id = 0x0c02,
+        .version = 0x0100,
+        .product_name = "UltraSystem USB Controller",
+        .manufacturer_name = "HTC",
+
+        .functions = usb_functions,
+        .num_functions = ARRAY_SIZE(usb_functions),
+        .products = usb_products,
+        .num_products = ARRAY_SIZE(usb_products),
+#endif
+};
 
 #ifdef CONFIG_USB_ANDROID
 static struct msm_hsusb_platform_data msm_hsusb_pdata = {
@@ -343,9 +363,12 @@ static void htcleo_add_usb_devices(void)
 	msm_device_hsusb.dev.platform_data = &msm_hsusb_pdata;
 	config_gpio_table(usb_phy_3v3_table, ARRAY_SIZE(usb_phy_3v3_table));
 	gpio_set_value(HTCLEO_GPIO_USBPHY_3V3_ENABLE, 1);
-	platform_device_register(&msm_device_hsusb);
-	platform_device_register(&usb_mass_storage_device);
-	platform_device_register(&android_usb_device);
+	// support usb host start
+	msm_hsusb_host_pdata.serial_number = board_serialno();
+	msm_device_hsusb_host.dev.platform_data = &msm_hsusb_host_pdata;
+	platform_device_register(&msm_device_hsusb_host);
+	// end diff
+
 }
 
 unsigned htcleo_get_vbus_state(void)
