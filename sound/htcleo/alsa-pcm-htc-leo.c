@@ -767,6 +767,7 @@ fail:
     return rc;
 }
 
+EXPORT_SYMBOL_GPL(htcleo_alsa_init_pcm);
 
 MODULE_AUTHOR("DFT-Cotulla");
 MODULE_DESCRIPTION("HTC LEO ALSA PCM driver");
